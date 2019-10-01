@@ -1,4 +1,4 @@
-### What problem does this PR solve?
+### What problem does this PR intend to solve?
 
 ### Describe the tasks implemented to solve the above problem
 
