@@ -1,11 +1,10 @@
 import app from './express';
 import config from '../config';
 
-const port = 5000;
+const { port } = config;
 app.listen(port, (error) => {
-    if (error) {
-        console.log(error);   
-    };
-    console.log(`server running at port ${port}`);  
-})
-
+  if (error) {
+    console.log(error);
+  }
+  console.log(`server running at port ${port}`);
+});
