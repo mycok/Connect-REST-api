@@ -13,4 +13,8 @@ app.use(compress());
 app.use(helmet());
 app.use(cors());
 
+app.get('/', (req, res) => {
+  res.end('Welcome to the connect REST api server!!');
+});
+
 export default app;
