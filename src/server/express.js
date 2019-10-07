@@ -12,9 +12,10 @@ app.use(cookieParser());
 app.use(compress());
 app.use(helmet());
 app.use(cors());
+app.set('strict routing', true);
 
 app.get('/', (req, res) => {
-  res.end('Welcome to the connect REST api server!!');
+  res.send('Welcome to the connect REST api server!!');
 });
 
 export default app;
