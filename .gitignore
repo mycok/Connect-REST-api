@@ -25,5 +25,6 @@ yarn.lock
 package-lock.json
 .vscode
 **.log
+.nyc_output
 
 
