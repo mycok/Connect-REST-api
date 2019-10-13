@@ -1,0 +1,11 @@
+{
+    "exclude": [
+        "./test/",
+        "./config/**",
+        ".eslintrc.js",
+        "node_modules",
+        "dist"
+    ],
+    "check-coverage": true,
+    "reporter": ["text", "lcov"]
+}

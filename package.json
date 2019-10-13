@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon",
-    "test": "export NODE_ENV=test && nyc --reporter=lcov --reporter=text mocha",
+    "test": "export NODE_ENV=testing && nyc mocha",
     "build": "webpack --mode=production --config webpack.config.server.js",
     "start": "NODE_ENV=production node ./dist/server.generated.js"
   },
@@ -45,27 +45,15 @@
     "@babel/register": "^7.6.2",
     "babel-loader": "^8.0.6",
     "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "eslint": "^6.5.1",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
     "mocha": "^6.2.1",
     "nodemon": "^1.18.2-alpha.1",
     "nyc": "^14.1.1",
-    "supertest": "^4.0.2",
     "webpack": "^4.41.0",
     "webpack-cli": "^3.3.9",
     "webpack-node-externals": "^1.7.2"
-  },
-  "nyc": {
-    "include": [
-      "./**/*.js"
-    ],
-    "exclude": [
-      "./test/",
-      "./config/**",
-      ".eslintrc.js",
-      "node_modules",
-      "dist"
-    ]
   }
 }
