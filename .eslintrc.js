@@ -19,5 +19,9 @@ module.exports = {
     "func-names": "off",
     "object-shorthand": "off",
     "no-useless-escape": "off",
+    "prefer-arrow-callback": "off",
+    "consistent-return": "off",
+    "no-restricted-syntax": "off",
+    "class-methods-use-this": "off"
   },
 };

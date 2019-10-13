@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import crypto from 'crypto';
 
-import { emailRegex, passwordRegex } from '../utils/validations';
+import { emailRegex, passwordRegex } from '../../utils/validations';
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -56,7 +56,8 @@ UserSchema.methods = {
 UserSchema.path('email').validate(emailRegex, 'Please provide a valid email address!');
 
 UserSchema.path('name').validate(function (value) {
-  if (value.length < 3) this.invalidate('name', 'A username must contain atleast 3 characters!');
+  const minNameLength = 3;
+  if (value.length < minNameLength) this.invalidate('name', 'A username must contain atleast 3 characters!');
 }, null);
 
 UserSchema.path('hashed_password').validate(function () {
