@@ -1,0 +1,190 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "v1.0.0",
+    "title": "connect-REST-api",
+    "description": "A social media api providing access to resources such as users, posts, followers, comments, likes and chat",
+    "contact": {
+      "name": "@creator",
+      "email": "awesomeme155@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://connect-rest-api.herokuapp.com",
+      "description": "Deployed Heroku Server"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "components": {
+    "schemas": {
+      "user": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "definations": {
+    "user": {
+      "type": "object",
+      "required": "true",
+      "properties": {
+        "name": "string",
+        "email": "string",
+        "password": "string"
+      }
+    }
+  },
+  "paths": {
+    "/connect/v1/users": {
+      "post": {
+        "tags": [
+          "Create"
+        ],
+        "summary": "Create a new User account",
+        "requestBody": {
+          "description": "User model fields",
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/user"
+              },
+              "example": {
+                "name": "test-user",
+                "email": "testuser@gmail.com",
+                "password": "test#useR19paSSword"
+              }
+            }
+          },
+          "schema": {
+            "$ref": "#/components/schemas/user"
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Account creation successfull",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request. user model fields error or duplicates error!"
+          },
+          "401": {
+            "description": "UnAithorized. user authentication and authorization error!"
+          },
+          "404": {
+            "description": "User not found. user with the specified id does not exist!"
+          }
+        }
+      },
+      "get": {
+        "tags": ["Read"],
+        "summary": "List all users",
+        "responses": {
+          "200": {
+            "description": "success. returns a list of all users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                } 
+              }
+            }
+          },
+          "400": {
+            "description": "Error"
+          }
+        }
+      }
+    },
+    "/connect/v1/users/{userId}": {
+      "get": {
+        "tags": ["Read by Id"],
+        "summary": "fetch a user by id",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "user id used to locate the matching user object",
+          "required" : true,
+          "type" : "integer"
+        } ],
+        "responses": {
+          "200": {
+            "description": "success. returns a user matching the provided id"
+          },
+          "404": {
+            "description": "User not found. user with the specified id does not exist!"
+          }
+        }
+      },
+      "put": {
+        "tags": ["update"],
+        "summary": "update user data by id",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "user id used to locate the matching user object",
+          "required" : true,
+          "type" : "integer"
+        } ],
+        "responses": {
+          "200": {
+            "description": "success. returns an updated user matching the provided id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/user"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User not found. user with the specified id does not exist!"
+          },
+          "400": {
+            "description": "Bad request. user model fields error or duplicates error!"
+          }
+        }
+      },
+      "delete": {
+        "tags": ["delete"],
+        "summary": "delete user data by id",
+        "parameters" : [ {
+          "name" : "userId",
+          "in" : "path",
+          "description" : "user id used to locate the matching user object",
+          "required" : true,
+          "type" : "integer"
+        } ],
+        "responses": {
+          "200": {
+            "description": "OK. return the delete count"
+          },
+          "404": {
+            "description": "User not found. user with the specified id does not exist!"
+          }
+        }
+      }
+    }
+  }
+}

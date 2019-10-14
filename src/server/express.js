@@ -5,6 +5,9 @@ import compress from 'compression';
 import cors from 'cors';
 import helmet from 'helmet';
 
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from '../../swagger.json';
+
 import UserRoutes from '../routes/user.routes';
 
 const app = express();
@@ -18,8 +21,10 @@ app.use(cors());
 app.set('strict routing', true);
 
 app.get('/', (req, res) => {
-  res.send('Welcome to the connect REST api server!!');
+  res.redirect('/swagger');
 });
+
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/', UserRoutes);
 
