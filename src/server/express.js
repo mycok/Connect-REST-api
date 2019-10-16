@@ -9,6 +9,7 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerDocument from '../../swagger.json';
 
 import UserRoutes from '../routes/user.routes';
+import AuthRoutes from '../routes/auth.routes';
 
 const app = express();
 
@@ -27,5 +28,12 @@ app.get('/', (req, res) => {
 app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/', UserRoutes);
+app.use('/', AuthRoutes);
+
+app.use((err, req, res, next) => {
+  if (err.name === 'UnauthorizedError') {
+    res.status(401).json({ error: `${err.message}` });
+  }
+});
 
 export default app;

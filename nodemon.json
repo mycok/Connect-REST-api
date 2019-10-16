@@ -1,5 +1,5 @@
 {
     "verbose": false,
     "watch": ["./src/**"],
-    "exec": " rm -rf ./dist/server.generated.js && webpack --mode=development --config webpack.config.server.js && node ./dist/server.generated.js"
+    "exec": "rm -rf ./dist/server.generated.js && webpack --mode=development --config webpack.config.server.js && node ./dist/server.generated.js"
 }

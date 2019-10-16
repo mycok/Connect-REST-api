@@ -34,7 +34,7 @@ UserSchema.virtual('password')
   });
 
 UserSchema.methods = {
-  verifyPassword: function (plainText) {
+  doPasswordsMatch: function (plainText) {
     return this.encryptPassword(plainText) === this.hashed_password;
   },
   encryptPassword: function (password) {

@@ -1,13 +1,9 @@
-import chai from 'chai';
-import chaiHttp from 'chai-http';
-
+import { expect, chaiWithHttp } from './fixtures/chai.setup';
 import app from '../src/server/express';
 import dbConnection from '../src/databse/index';
 import modelData from './fixtures/userModel';
 
-const { expect } = chai;
-chai.use(chaiHttp);
-const url = '/connect/v1/users';
+const baseUrl = '/connect/v1';
 
 describe('user model CRUD operations', function () {
   let connection;
@@ -25,9 +21,9 @@ describe('user model CRUD operations', function () {
 
   context('if user registration is attempted by providing less than the required number of parameters', function () {
     it('should throw an error', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .post(url)
+        .post(`${baseUrl}/users`)
         .set('Accept', 'application/json')
         .send(modelData.UserObjectWithLessThanRequiredParams)
         .end(function (err, res) {
@@ -48,9 +44,9 @@ describe('user model CRUD operations', function () {
 
   context('if user registration is attempted by providing more than the required number of parameters', function () {
     it('should throw an error', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .post(url)
+        .post(`${baseUrl}/users`)
         .set('Accept', 'application/json')
         .send(modelData.UserObjectWithLessThanRequiredParams)
         .end(function (err, res) {
@@ -71,9 +67,9 @@ describe('user model CRUD operations', function () {
 
   context('if user registration is attempted by passing an empty string for a name ', function () {
     it('should throw an error', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .post(url)
+        .post(`${baseUrl}/users`)
         .set('Accept', 'application/json')
         .send(modelData.UserObjectWithNameAsEmptyString)
         .end(function (err, res) {
@@ -87,9 +83,9 @@ describe('user model CRUD operations', function () {
 
   context('if user registration is attempted by passing a name with less than three characters ', function () {
     it('should throw an error', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .post(url)
+        .post(`${baseUrl}/users`)
         .set('Accept', 'application/json')
         .send(modelData.userWithInvalidNameCharacterLength)
         .end(function (err, res) {
@@ -103,9 +99,9 @@ describe('user model CRUD operations', function () {
 
   context('if user registration is attempted by passing an email as an empty string ', function () {
     it('should throw an error', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .post(url)
+        .post(`${baseUrl}/users`)
         .set('Accept', 'application/json')
         .send(modelData.UserObjectWithEmailAsEmptyString)
         .end(function (err, res) {
@@ -119,9 +115,9 @@ describe('user model CRUD operations', function () {
 
   context('if user registration is attempted by passing an email with an invalid format ', function () {
     it('should throw an error', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .post(url)
+        .post(`${baseUrl}/users`)
         .set('Accept', 'application/json')
         .send(modelData.userWithInvalidEmailFormat)
         .end(function (err, res) {
@@ -135,9 +131,9 @@ describe('user model CRUD operations', function () {
 
   context('if user registration is attempted by passing a password as an empty string ', function () {
     it('should throw an error', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .post(url)
+        .post(`${baseUrl}/users`)
         .set('Accept', 'application/json')
         .send(modelData.userWithPasswordAsEmptyString)
         .end(function (err, res) {
@@ -151,9 +147,9 @@ describe('user model CRUD operations', function () {
 
   context('if user registration is attempted by passing a password with an invalid format ', function () {
     it('should throw an error', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .post(url)
+        .post(`${baseUrl}/users`)
         .set('Accept', 'application/json')
         .send(modelData.userWithInvalidPasswordFormat)
         .end(function (err, res) {
@@ -169,9 +165,9 @@ describe('user model CRUD operations', function () {
 
   context('if user registration is attempted by passing a password with less than eight characters', function () {
     it('should throw an error', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .post(url)
+        .post(`${baseUrl}/users`)
         .set('Accept', 'application/json')
         .send(modelData.userWithInValidPasswordLength)
         .end(function (err, res) {
@@ -187,13 +183,12 @@ describe('user model CRUD operations', function () {
 
   context('if user registration is attempted by providing valid user parameters', function () {
     it('should successfully register a user', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .post(url)
+        .post(`${baseUrl}/users`)
         .set('Accept', 'application/json')
         .send(modelData.validUserObject)
         .end(function (err, res) {
-          user = res.body.data;
           expect(res.status).to.equal(201);
           expect(res.body.message).to.equal('Account creation successful');
           done(err);
@@ -201,11 +196,58 @@ describe('user model CRUD operations', function () {
     });
   });
 
+  context('after successful user registration, if signin is attempted by providing a wrong email', function () {
+    it('should throw a user with provided email doesnot exist error', function (done) {
+      chaiWithHttp
+        .request(app)
+        .post(`${baseUrl}/signin`)
+        .set('Accept', 'application/json')
+        .send(modelData.loginWithWrongEmail)
+        .end(function (err, res) {
+          expect(res.status).to.equal(401);
+          expect(res.body.error).to.equal(`User with email ${modelData.loginWithWrongEmail.email} doesn't exist!`);
+          done(err);
+        });
+    });
+  });
+
+  context('after successful user registration, if signin is attempted by providing a wrong password', function () {
+    it('should throw a password mis-match error', function (done) {
+      chaiWithHttp
+        .request(app)
+        .post(`${baseUrl}/signin`)
+        .set('Accept', 'application/json')
+        .send(modelData.loginWithWrongPassword)
+        .end(function (err, res) {
+          expect(res.status).to.equal(401);
+          expect(res.body.error).to.equal('Provided password does not match the registered password!');
+          done(err);
+        });
+    });
+  });
+
+  context('after successful user registration, if signin is attempted by providing valid user parameters', function () {
+    it('should successfully signin a user', function (done) {
+      chaiWithHttp
+        .request(app)
+        .post(`${baseUrl}/signin`)
+        .set('Accept', 'application/json')
+        .send(modelData.validLoginUserObject)
+        .end(function (err, res) {
+          user = res.body.data;
+          expect(res.status).to.equal(200);
+          expect(res.body.message).to.equal(`${user.name} has successfully signed in!`);
+          expect(res.body.data).to.own.property('token');
+          done(err);
+        });
+    });
+  });
   context('if a user wants to view all users', function () {
     it('should return an array of user objects', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .get(url)
+        .get(`${baseUrl}/users`)
+        .set('Authorization', `Bearer ${user.token}`)
         .end(function (err, res) {
           expect(res.status).to.equal(200);
           expect(res.body.message).to.equal('success');
@@ -221,9 +263,10 @@ describe('user model CRUD operations', function () {
 
   context('if a user wants to view their personal data by providing a valid user id', function () {
     it('should return all the relevant data for that specific user', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .get(`${url}/${user._id}`)
+        .get(`${baseUrl}/users/${user._id}`)
+        .set('Authorization', `Bearer ${user.token}`)
         .end(function (err, res) {
           expect(res.status).to.equal(200);
           expect(res.body.message).to.equal('success');
@@ -234,11 +277,27 @@ describe('user model CRUD operations', function () {
     });
   });
 
+  context('if user registration is attempted by providing duplicate user properties', function () {
+    this.timeout(2000);
+    it('should throw a [property] already exists error', function (done) {
+      chaiWithHttp
+        .request(app)
+        .post(`${baseUrl}/users`)
+        .set('Accept', 'application/json')
+        .send(modelData.validUserObject)
+        .end(function (err, res) {
+          expect(res.status).to.equal(400);
+          expect(res.body.error).to.equal(': name already exists');
+          done(err);
+        });
+    });
+  });
+
   context('if a user wants to view their personal data but provides a wrong id', function () {
     it('should throw a user not found error', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .get(`${url}/5da0d90b883782c3c9233196`)
+        .get(`${baseUrl}/users/5da0d90b883782c3c9233196`)
         .end(function (err, res) {
           expect(res.status).to.equal(400);
           expect(res.body.error).to.equal('User not found!');
@@ -249,10 +308,11 @@ describe('user model CRUD operations', function () {
 
   context('if a user wants to update their personal data but provides a wrong id', function () {
     it('should throw a user not found error', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .put(`${url}/5da0d90b883782c3c9233196`)
+        .put(`${baseUrl}/users/5da0d90b883782c3c9233196`)
         .set('Accept', 'application/json')
+        .send({ name: 'someRandomName' })
         .end(function (err, res) {
           expect(res.status).to.equal(400);
           expect(res.body.error).to.equal('User not found!');
@@ -261,12 +321,60 @@ describe('user model CRUD operations', function () {
     });
   });
 
+  context('if a user wants to update their personal data without signing in', function () {
+    it('should throw a no token error', function (done) {
+      chaiWithHttp
+        .request(app)
+        .put(`${baseUrl}/users/${user._id}`)
+        .set('Accept', 'application/json')
+        .send({ name: 'someRandomName' })
+        .end(function (err, res) {
+          expect(res.status).to.equal(401);
+          expect(res.body.error).to.equal('No authorization token was found');
+          done(err);
+        });
+    });
+  });
+
+  context('if a user wants to update their personal data by providing an invalid token', function () {
+    it('should throw an invalid token error', function (done) {
+      chaiWithHttp
+        .request(app)
+        .put(`${baseUrl}/users/${user._id}`)
+        .set('Accept', 'application/json')
+        .set('Authorization', `Bearer ${modelData.invalidToken}`)
+        .send({ name: 'someRandomName' })
+        .end(function (err, res) {
+          expect(res.status).to.equal(401);
+          expect(res.body.error).to.equal('invalid token');
+          done(err);
+        });
+    });
+  });
+
+  context('if a user wants to update another persons data by providing a his token', function () {
+    it('should throw an unauthorized error', function (done) {
+      chaiWithHttp
+        .request(app)
+        .put(`${baseUrl}/users/${user._id}`)
+        .set('Accept', 'application/json')
+        .set('Authorization', `Bearer ${modelData.anotherUsersToken}`)
+        .send({ name: 'someRandomName' })
+        .end(function (err, res) {
+          expect(res.status).to.equal(401);
+          expect(res.body.error).to.equal('Unauthorized access!');
+          done(err);
+        });
+    });
+  });
+
   context('if a user wants to update their name but provides a name that already exists', function () {
     it('should throw a duplicate error', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .put(`${url}/${user._id}`)
+        .put(`${baseUrl}/users/${user._id}`)
         .set('Accept', 'application/json')
+        .set('Authorization', `Bearer ${user.token}`)
         .send({ name: `${user.name}` })
         .end(function (err, res) {
           expect(res.status).to.equal(400);
@@ -279,10 +387,11 @@ describe('user model CRUD operations', function () {
 
   context('if a user wants to update their email but provides an email that already exists', function () {
     it('should throw a duplicate error', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .put(`${url}/${user._id}`)
+        .put(`${baseUrl}/users/${user._id}`)
         .set('Accept', 'application/json')
+        .set('Authorization', `Bearer ${user.token}`)
         .send({ email: `${user.email}` })
         .end(function (err, res) {
           expect(res.status).to.equal(400);
@@ -294,10 +403,11 @@ describe('user model CRUD operations', function () {
 
   context('if a user wants to update their personal data by passing valid values', function () {
     it('should successfully update the users data', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .put(`${url}/${user._id}`)
+        .put(`${baseUrl}/users/${user._id}`)
         .set('Accept', 'application/json')
+        .set('Authorization', `Bearer ${user.token}`)
         .send({ name: 'test-user-1' })
         .end(function (err, res) {
           expect(res.status).to.equal(200);
@@ -311,9 +421,9 @@ describe('user model CRUD operations', function () {
 
   context('if a user wants to delete their user account by providing a wrong id', function () {
     it('should throw a user not found error', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .delete(`${url}/5da0d90b883782c3c9233196`)
+        .delete(`${baseUrl}/users/5da0d90b883782c3c9233196`)
         .end(function (err, res) {
           expect(res.status).to.equal(400);
           expect(res.body.error).to.equal('User not found!');
@@ -322,14 +432,28 @@ describe('user model CRUD operations', function () {
     });
   });
 
-  context('if a user wants to delete their user account', function () {
+  context('if a user wants to delete their user account by providing a valid token and user_id', function () {
     it('should successfully delete a users account', function (done) {
-      chai
+      chaiWithHttp
         .request(app)
-        .delete(`${url}/${user._id}`)
+        .delete(`${baseUrl}/users/${user._id}`)
+        .set('Authorization', `Bearer ${user.token}`)
         .end(function (err, res) {
           expect(res.status).to.equal(200);
           expect(res.body.data.deletedCount).to.equal(1);
+          done(err);
+        });
+    });
+  });
+
+  context('if a user wants to signout', function () {
+    it('should successfully signout a user', function (done) {
+      chaiWithHttp
+        .request(app)
+        .get(`${baseUrl}/signout`)
+        .end(function (err, res) {
+          expect(res.status).to.equal(200);
+          expect(res.body.message).to.equal('Signed out');
           done(err);
         });
     });

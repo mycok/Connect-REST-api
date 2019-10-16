@@ -1,9 +1,5 @@
 import User from '../databse/models/user.model';
-import {
-  onFailure,
-  onSuccess,
-  onDuplicates,
-} from '../utils/customResponses';
+import { onFailure, onSuccess, onDuplicates } from '../utils/customResponses';
 
 class UserController {
   static async create(req, res) {
@@ -26,7 +22,7 @@ class UserController {
   static async list(req, res) {
     let users = [];
     try {
-      users = await User.find().select('name email, created, updated');
+      users = await User.find().select('_id name email');
     } catch (err) {
       return onFailure(res, 400, err);
     }
@@ -56,7 +52,7 @@ class UserController {
     return onSuccess(res, 200, updatedUser);
   }
 
-  static async delete(req, res) {
+  static async remove(req, res) {
     const { user: { name } } = req;
     let deletedResponse = {};
     try {
@@ -82,18 +78,19 @@ class UserController {
 
   static async checkDuplicatesOnUpdate(req, res, next) {
     const { body } = req;
-    const updateParams = Object.keys(body);
-    let param = '';
+    const propertiesToUpdate = Object.keys(body);
+    let property = '';
+    let user = null;
 
     try {
-      if (updateParams.includes('name')) {
-        param = 'name';
-        const user = await User.findOne({ [param]: body[param] });
-        if (user) return onDuplicates(res, 400, body[param]);
+      if (propertiesToUpdate.includes('name')) {
+        property = 'name';
+        user = await User.findOne({ [property]: body[property] });
+        if (user) return onDuplicates(res, 400, body[property]);
       }
-      if (updateParams.includes('email')) { param = 'email'; }
-      const user = await User.findOne({ [param]: body[param] });
-      if (user) return onDuplicates(res, 400, body[param]);
+      if (propertiesToUpdate.includes('email')) { property = 'email'; }
+      user = await User.findOne({ [property]: body[property] });
+      if (user) return onDuplicates(res, 400, body[property]);
     } catch (err) {
       return onFailure(res, 400, err);
     }

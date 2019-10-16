@@ -2,8 +2,8 @@
   "openapi": "3.0.0",
   "info": {
     "version": "v1.0.0",
-    "title": "connect-REST-api",
-    "description": "A social media api providing access to resources such as users, posts, followers, comments, likes and chat",
+    "title": "connect",
+    "description": "A social media REST api providing access to resources such as users, posts, followers, comments, likes and chat",
     "contact": {
       "name": "@creator",
       "email": "awesomeme155@gmail.com"
@@ -36,6 +36,18 @@
           }
         }
       }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "responses": {
+      "UnauthorizedError": {
+        "description": "Access token is missing or invalid"
+      }
     }
   },
   "definations": {
@@ -50,6 +62,31 @@
     }
   },
   "paths": {
+    "/connect/v1/signin": {
+      "post": {
+        "tags": ["signin"],
+        "summary": "user signin",
+        "responses": {
+          "200": {
+            "description": "success. returns a user object along with the generated auth token"
+          },
+          "401": {
+            "description": "User not found. user with the specified email does not exist or password mis-match!"
+          }
+        }
+      }
+    },
+    "/connect/v1/signout": {
+      "get": {
+        "tags": ["signout"],
+        "summary": "user signout",
+        "responses": {
+          "200": {
+            "description": "success. deletes a user cookie from the response object in case the client uses cookies"
+          }
+        }
+      }
+    },
     "/connect/v1/users": {
       "post": {
         "tags": [
@@ -100,6 +137,9 @@
       "get": {
         "tags": ["Read"],
         "summary": "List all users",
+        "security": {
+          "bearerAuth": []
+        },
         "responses": {
           "200": {
             "description": "success. returns a list of all users",
@@ -113,16 +153,22 @@
           },
           "400": {
             "description": "Error"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
           }
         }
       }
     },
-    "/connect/v1/users/{userId}": {
+    "/connect/v1/users/{id}": {
       "get": {
         "tags": ["Read by Id"],
         "summary": "fetch a user by id",
+        "security": {
+          "bearerAuth": []
+        },
         "parameters" : [ {
-          "name" : "userId",
+          "name" : "id",
           "in" : "path",
           "description" : "user id used to locate the matching user object",
           "required" : true,
@@ -134,14 +180,20 @@
           },
           "404": {
             "description": "User not found. user with the specified id does not exist!"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
           }
         }
       },
       "put": {
         "tags": ["update"],
         "summary": "update user data by id",
+        "security": {
+          "bearerAuth": []
+        },
         "parameters" : [ {
-          "name" : "userId",
+          "name" : "id",
           "in" : "path",
           "description" : "user id used to locate the matching user object",
           "required" : true,
@@ -163,14 +215,20 @@
           },
           "400": {
             "description": "Bad request. user model fields error or duplicates error!"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
           }
         }
       },
       "delete": {
         "tags": ["delete"],
         "summary": "delete user data by id",
+        "security": {
+          "bearerAuth": []
+        },
         "parameters" : [ {
-          "name" : "userId",
+          "name" : "id",
           "in" : "path",
           "description" : "user id used to locate the matching user object",
           "required" : true,
@@ -182,6 +240,9 @@
           },
           "404": {
             "description": "User not found. user with the specified id does not exist!"
+          },
+          "401": {
+            "$ref": "#/components/responses/UnauthorizedError"
           }
         }
       }
