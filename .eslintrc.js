@@ -22,6 +22,7 @@ module.exports = {
     "prefer-arrow-callback": "off",
     "consistent-return": "off",
     "no-restricted-syntax": "off",
-    "class-methods-use-this": "off"
+    "class-methods-use-this": "off",
+    "eqeqeq": "off"
   },
 };

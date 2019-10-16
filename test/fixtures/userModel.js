@@ -58,11 +58,23 @@ const validUserObject = {
   password: 'somEraNdom#pass62',
 };
 
-const validUserObject1 = {
-  name: 'test-user-1',
-  email: 'testuser@gmail.com',
-  password: 'someRandomP#67',
+const validLoginUserObject = {
+  email: 'somerandomemail@test.now',
+  password: 'somEraNdom#pass62',
 };
+
+const loginWithWrongEmail = {
+  email: 'somerandomemail@tests.now',
+  password: 'somEraNdom#pass62',
+};
+
+const loginWithWrongPassword = {
+  email: 'somerandomemail@test.now',
+  password: 'somEraNdom#pass626',
+};
+
+const invalidToken = 'teyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZGE2NDFlMTA3ZTQ4OWFkNjdkZjE3OWEiLCJlbWFpbCI6InNvbWVlbWFpbEBub3cuYWRkcmVzcyIsImlhdCI6MTU3MTIxNjg3Nn0.52aFuoJNTVQWiiI8dGCv70z7DTd8j4pPoxEpq9eL3Pw';
+const anotherUsersToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1ZGE2NDFlMTA3ZTQ4OWFkNjdkZjE3OWEiLCJlbWFpbCI6InNvbWVlbWFpbEBub3cuYWRkcmVzcyIsImlhdCI6MTU3MTIxNjg3Nn0.52aFuoJNTVQWiiI8dGCv70z7DTd8j4pPoxEpq9eL3Pw';
 
 export default {
   UserObjectWithLessThanRequiredParams,
@@ -75,5 +87,9 @@ export default {
   userWithInvalidPasswordFormat,
   userWithInValidPasswordLength,
   validUserObject,
-  validUserObject1,
+  validLoginUserObject,
+  loginWithWrongEmail,
+  loginWithWrongPassword,
+  invalidToken,
+  anotherUsersToken,
 };
