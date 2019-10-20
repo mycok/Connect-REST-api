@@ -13,12 +13,21 @@ describe('user model CRUD operations', function () {
     done();
   });
 
-  after('this test suite runs, close the mongodb connection', function (done) {
-    connection.collections.users.drop().then(
-      connection.close().then(() => done()),
-    );
+  after('this test suite runs, close the mongodb connection', async function () {
+    await connection.collections.users.drop();
+    await connection.close();
   });
 
+  context('app redirects when accessed with an index route "/"', function () {
+    it('redirects tothe swagger documentation page', function () {
+      chaiWithHttp
+        .request(app)
+        .get('/')
+        .end(function (err, res) {
+          expect(res).to.redirect;
+        });
+    });
+  });
   context('if user registration is attempted by providing less than the required number of parameters', function () {
     it('should throw an error', function (done) {
       chaiWithHttp
@@ -189,6 +198,7 @@ describe('user model CRUD operations', function () {
         .set('Accept', 'application/json')
         .send(modelData.validUserObject)
         .end(function (err, res) {
+          user = res.body.data;
           expect(res.status).to.equal(201);
           expect(res.body.message).to.equal('Account creation successful');
           done(err);
@@ -220,13 +230,38 @@ describe('user model CRUD operations', function () {
         .send(modelData.loginWithWrongPassword)
         .end(function (err, res) {
           expect(res.status).to.equal(401);
-          expect(res.body.error).to.equal('Provided password does not match the registered password!');
+          expect(res.body.error).to.equal('Provided password does not match your registered password!');
           done(err);
         });
     });
   });
 
+  context('after successful user registration, if signin is attempted without first activating the account', function () {
+    it('should throw an unauthorized error', function (done) {
+      chaiWithHttp
+        .request(app)
+        .post(`${baseUrl}/signin`)
+        .set('Accept', 'application/json')
+        .send(modelData.validLoginUserObject)
+        .end(function (err, res) {
+          expect(res.status).to.equal(401);
+          expect(res.body.error).to.equal('Please activate your account by clicking the link in your email inbox!');
+          done(err);
+        });
+    });
+  });
+
+
   context('after successful user registration, if signin is attempted by providing valid user parameters', function () {
+    before(async function () {
+      try {
+        await connection.collections.users.findOneAndUpdate(
+          { email: user.email }, { $set: { isActive: true } },
+        );
+      } catch (error) {
+        return error;
+      }
+    });
     it('should successfully signin a user', function (done) {
       chaiWithHttp
         .request(app)
@@ -352,7 +387,7 @@ describe('user model CRUD operations', function () {
     });
   });
 
-  context('if a user wants to update another persons data by providing a his token', function () {
+  context('if a user wants to update another persons data by providing his own token', function () {
     it('should throw an unauthorized error', function (done) {
       chaiWithHttp
         .request(app)

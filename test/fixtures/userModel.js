@@ -8,6 +8,7 @@ const UserObjectWithMoreThanRequiredParams = {
   email: 'somerandomemail@test.now',
   password: 'somEraNdom#pass62',
   Bio: '',
+  photo: '',
 };
 
 const UserObjectWithNameAsEmptyString = {

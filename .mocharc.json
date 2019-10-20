@@ -5,7 +5,7 @@
     "package": "./package.json",
     "reporter": "spec",
     "slow": 75,
-    "timeout": 2000,
+    "timeout": 4000,
     "ui": "bdd",
     "watch-files": ["test/**/*.js"],
     "watch-ignore": ["lib/vendor"],
