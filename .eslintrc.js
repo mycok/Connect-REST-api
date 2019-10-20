@@ -22,7 +22,8 @@ module.exports = {
     "prefer-arrow-callback": "off",
     "consistent-return": "off",
     "no-restricted-syntax": "off",
-    "class-methods-use-this": "off",
-    "eqeqeq": "off"
+    "eqeqeq": "off",
+    "object-curly-newline": "off",
+    "no-await-in-loop": "off",
   },
 };

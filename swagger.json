@@ -33,12 +33,15 @@
           },
           "password": {
             "type": "string"
+          },
+          "bio": {
+            "type": "string"
           }
         }
       }
     },
     "securitySchemes": {
-      "BearerAuth": {
+      "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
@@ -57,7 +60,8 @@
       "properties": {
         "name": "string",
         "email": "string",
-        "password": "string"
+        "password": "string",
+        "bio": "string"
       }
     }
   },
@@ -66,6 +70,24 @@
       "post": {
         "tags": ["signin"],
         "summary": "user signin",
+        "requestBody": {
+          "description": "User signin fields",
+          "required": "true",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/user"
+              },
+              "example": {
+                "email": "testuser@gmail.com",
+                "password": "test#useR19paSSword"
+              }
+            }
+          },
+          "schema": {
+            "$ref": "#/components/schemas/user"
+          }
+        },
         "responses": {
           "200": {
             "description": "success. returns a user object along with the generated auth token"
@@ -90,7 +112,7 @@
     "/connect/v1/users": {
       "post": {
         "tags": [
-          "Create"
+          "create"
         ],
         "summary": "Create a new User account",
         "requestBody": {
@@ -135,7 +157,7 @@
         }
       },
       "get": {
-        "tags": ["Read"],
+        "tags": ["get"],
         "summary": "List all users",
         "security": {
           "bearerAuth": []
@@ -162,7 +184,7 @@
     },
     "/connect/v1/users/{id}": {
       "get": {
-        "tags": ["Read by Id"],
+        "tags": ["get by Id"],
         "summary": "fetch a user by id",
         "security": {
           "bearerAuth": []
@@ -170,7 +192,7 @@
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
-          "description" : "user id used to locate the matching user object",
+          "description" : "user _id",
           "required" : true,
           "type" : "integer"
         } ],
@@ -195,10 +217,29 @@
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
-          "description" : "user id used to locate the matching user object",
+          "description" : "user _id",
           "required" : true,
           "type" : "integer"
         } ],
+        "requestBody": {
+          "description": "User update fields",
+          "required": "false",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/user"
+              },
+              "example": {
+                "name": "test-user",
+                "email": "testuser@gmail.com",
+                "password": "test#useR19paSSword"
+              }
+            }
+          },
+          "schema": {
+            "$ref": "#/components/schemas/user"
+          }
+        },
         "responses": {
           "200": {
             "description": "success. returns an updated user matching the provided id",
@@ -230,7 +271,7 @@
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
-          "description" : "user id used to locate the matching user object",
+          "description" : "user _id",
           "required" : true,
           "type" : "integer"
         } ],

@@ -8,6 +8,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     trim: true,
     lowercase: true,
+    minlength: [3, 'A username must contain atleast 3 characters!'],
     unique: true,
     required: 'A name is required!',
   },
@@ -16,6 +17,17 @@ const UserSchema = new mongoose.Schema({
     trim: true,
     unique: 'Email already exists',
     required: 'An email address is required!',
+  },
+  photo: {
+    type: String,
+  },
+  bio: {
+    type: String,
+    trim: true,
+  },
+  isActive: {
+    type: Boolean,
+    default: false,
   },
   hashed_password: {
     type: String,
@@ -54,11 +66,6 @@ UserSchema.methods = {
 };
 
 UserSchema.path('email').validate(emailRegex, 'Please provide a valid email address!');
-
-UserSchema.path('name').validate(function (value) {
-  const minNameLength = 3;
-  if (value.length < minNameLength) this.invalidate('name', 'A username must contain atleast 3 characters!');
-}, null);
 
 UserSchema.path('hashed_password').validate(function () {
   if (this.isNew && !this._password) {
