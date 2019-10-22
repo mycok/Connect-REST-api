@@ -5,6 +5,7 @@ import generateToken from '../utils/generateToken';
 import generateLink from '../utils/generateLink';
 import sendAccountActivationEmail from '../mail';
 import config from '../config';
+import { passwordRegex } from '../utils/validations';
 
 class UserController {
   static async create(req, res) {
@@ -81,6 +82,25 @@ class UserController {
     }
 
     return onSuccess(res, 200, deletedResponse, `${name} successfully deleted!`);
+  }
+
+  static async passwordReset(req, res) {
+    const { body: { oldPassword, newPassword }, user: { _id, email } } = req;
+
+    try {
+      const user = await User.findOne({ _id, email });
+
+      if (!user.doPasswordsMatch(oldPassword)) return res.status(400).json({ error: 'oldPassword does not match your registered password!' });
+      if (!passwordRegex(newPassword)) {
+        return res.status(400).json({ error: 'A password must contain a minimum of 8 characters including atleast one an uppercase, lowercase, number and a special character!' });
+      }
+
+      const hashedPassword = user.encryptPassword(newPassword);
+      await User.findOneAndUpdate({ _id, email }, { hashed_password: hashedPassword });
+    } catch (err) {
+      return onFailure(res, 400, err);
+    }
+    return res.status(200).json({ success: 'Password reset sucessful!' });
   }
 
   static async fetchUserByID(req, res, next, id) {

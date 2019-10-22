@@ -454,6 +454,51 @@ describe('user model CRUD operations', function () {
     });
   });
 
+  context('if a user wants to reset their password by providing a wrong old password', function () {
+    it('should throw a pasword mis-match error', function (done) {
+      chaiWithHttp
+        .request(app)
+        .post(`${baseUrl}/users/${user._id}/passwordReset`)
+        .set('Authorization', `Bearer ${user.token}`)
+        .send({ oldPassword: 'somEraNdom#pass6', newPassword: 'somEraNdom#pass62' })
+        .end(function (err, res) {
+          expect(res.status).to.equal(400);
+          expect(res.body.error).to.equal('oldPassword does not match your registered password!');
+          done(err);
+        });
+    });
+  });
+
+  context('if a user wants to reset their password by providing an invalid new password', function () {
+    it('should throw an invalid password error', function (done) {
+      chaiWithHttp
+        .request(app)
+        .post(`${baseUrl}/users/${user._id}/passwordReset`)
+        .set('Authorization', `Bearer ${user.token}`)
+        .send({ oldPassword: 'somEraNdom#pass62', newPassword: 'somEra' })
+        .end(function (err, res) {
+          expect(res.status).to.equal(400);
+          expect(res.body.error).to.equal('A password must contain a minimum of 8 characters including atleast one an uppercase, lowercase, number and a special character!');
+          done(err);
+        });
+    });
+  });
+
+  context('if a user wants to reset their password by providing valid values', function () {
+    it('should successfully reset the users password', function (done) {
+      chaiWithHttp
+        .request(app)
+        .post(`${baseUrl}/users/${user._id}/passwordReset`)
+        .set('Authorization', `Bearer ${user.token}`)
+        .send({ oldPassword: 'somEraNdom#pass62', newPassword: 'somEraNdom#pass62' })
+        .end(function (err, res) {
+          expect(res.status).to.equal(200);
+          expect(res.body.success).to.equal('Password reset sucessful!');
+          done(err);
+        });
+    });
+  });
+
   context('if a user wants to delete their user account by providing a wrong id', function () {
     it('should throw a user not found error', function (done) {
       chaiWithHttp
@@ -466,7 +511,6 @@ describe('user model CRUD operations', function () {
         });
     });
   });
-
   context('if a user wants to delete their user account by providing a valid token and user_id', function () {
     it('should successfully delete a users account', function (done) {
       chaiWithHttp

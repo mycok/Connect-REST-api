@@ -15,7 +15,7 @@ const UserSchema = new mongoose.Schema({
   email: {
     type: String,
     trim: true,
-    unique: 'Email already exists',
+    unique: true,
     required: 'An email address is required!',
   },
   photo: {
