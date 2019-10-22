@@ -9,6 +9,7 @@ const {
   create, list, read,
   update, remove, fetchUserByID,
   checkDuplicatesOnUpdate,
+  passwordReset,
 } = UserController;
 
 router.param('userId', fetchUserByID);
@@ -21,5 +22,8 @@ router.route('/connect/v1/users/:userId')
   .get(authenticate, read)
   .put(authenticate, authorize, checkDuplicatesOnUpdate, update)
   .delete(authenticate, authorize, remove);
+
+router.route('/connect/v1/users/:userId/passwordReset')
+  .post(authenticate, authorize, passwordReset);
 
 export default router;
